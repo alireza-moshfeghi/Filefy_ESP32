@@ -83,16 +83,6 @@ You will be redirected to the file transfer page.
 
 ---
 
-## 🔐 Default Login Credentials
-
-| Role | Username | Password |
-|------|----------|----------|
-| Admin | admin | admin |
-
-> 🔒 **Security Note:** For better security, please change the default password after your first connection.
-
----
-
 ## 📄 License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
