@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title></title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: 'Segoe UI', 'Vazirmatn', system-ui, -apple-system, 'Roboto', Tahoma, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #1e2a3a 0%, #0f1724 100%);
+            transition: background 0.2s ease;
+        }
+
+        .admin-container {
+            max-width: 560px;
+            width: 100%;
+            background: rgba(20, 28, 38, 0.92);
+            backdrop-filter: blur(10px);
+            border-radius: 2rem;
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.08);
+            overflow: hidden;
+        }
+
+        .box-section {
+            padding: 2rem 2rem 1rem 2rem;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .admin-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #FFFFFF, #cfddee);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .admin-subtitle {
+            font-size: 0.85rem;
+            opacity: 0.8;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .admin-section {
+            padding: 1.5rem 2rem 2rem 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            text-align: right;
+            color: #e0e0e0;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .form-group input[type="text"] {
+            width: 100%;
+            padding: 0.85rem 1rem;
+            background: #f5f7fa;
+            border: 2px solid #d1d5db;
+            border-radius: 1rem;
+            font-size: 0.95rem;
+            font-family: inherit;
+            color: #1f2937;
+            direction: rtl;
+            transition: all 0.2s ease;
+        }
+
+        .form-group input[type="text"]:focus {
+            outline: none;
+            border-color: #4f46e5;
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+        }
+
+        .form-group input[type="text"]::placeholder {
+            color: #9ca3af;
+        }
+
+        .color-picker-group {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 1rem;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .color-picker-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #e0e0e0;
+        }
+
+        .color-picker-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .color-input {
+            width: 45px;
+            height: 38px;
+            border: 2px solid #d1d5db;
+            border-radius: 10px;
+            cursor: pointer;
+            padding: 0;
+            background: white;
+        }
+
+        .color-input::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+
+        .color-input::-webkit-color-swatch {
+            border: none;
+            border-radius: 8px;
+        }
+
+        .color-hex {
+            width: 85px;
+            padding: 8px;
+            font-size: 0.8rem;
+            font-family: monospace;
+            text-align: center;
+            border: 2px solid #d1d5db;
+            border-radius: 10px;
+            background: white;
+            color: #1f2937;
+            direction: ltr;
+        }
+
+        .color-hex:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .admin-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            flex: 1;
+            padding: 0.9rem 0;
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: inherit;
+            text-decoration: none;
+            border: none;
+            border-radius: 3rem;
+            cursor: pointer;
+            color: white;
+            transition: opacity 0.15s;
+        }
+
+        .save-btn {
+            background: #4f46e5;
+        }
+
+        .cancel-btn {
+            background: #6b7280;
+        }
+
+        .admin-btn:hover {
+            opacity: 0.85;
+        }
+
+        #loading {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+        }
+
+        #loading.fade-out {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loader-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(20, 28, 38, 0.95);
+            padding: 20px 32px;
+            border-radius: 2rem;
+            font-family: inherit;
+            font-size: 18px;
+            color: white;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @media (max-width: 550px) {
+            body {
+                padding: 1rem;
+            }
+
+            .box-section {
+                padding: 1.5rem 1.5rem 0.8rem 1.5rem;
+            }
+
+            .admin-title {
+                font-size: 1.5rem;
+            }
+
+            .admin-section {
+                padding: 1.2rem 1.5rem 1.8rem 1.5rem;
+            }
+
+            .color-picker-group {
+                flex-direction: column;
+                gap: 8px;
+                align-items: flex-start;
+            }
+
+            .color-picker-wrapper {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .btn-group {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+
+            .admin-btn {
+                padding: 0.75rem 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="loading">
+        <div class="loader-content">
+            <div class="spinner"></div>
+            <span>...در حال بارگزاری</span>
+        </div>
+    </div>
+
+    <div class="admin-container" id="settingsContainer">
+        <div class="box-section">
+            <div class="admin-title header-title" style="color: #333;">تنظیمات ظاهری</div>
+            <div class="admin-subtitle" style="color: gray;">رنگ‌ها و ظاهر صفحه فروشگاه را سفارشی کنید</div>
+        </div>
+        <div class="admin-section">
+            <form onsubmit="saveSettings(event)" id="settingsForm">
+                <div class="form-group">
+                    <label style="color: #333;">نام فروشگاه:</label>
+                    <input type="text" id="storeName" placeholder="نام فروشگاه را وارد کنید">
+                </div>
+                <div class="form-group">
+                    <label style="color: #333;">فایل های مجاز:</label>
+                    <input type="text" id="allow" placeholder="مثال: تصویر,ویدیو,صوت">
+                </div>
+                <div class="form-group">
+                    <label style="color: #333;">حداکثر حجم مجاز:</label>
+                    <input type="text" id="limit" placeholder="مثال: 100">
+                </div>
+                <div class="color-picker-group">
+                    <span class="color-picker-label" style="color: #333;">🎨 رنگ پس زمینه:</span>
+                    <div class="color-picker-wrapper">
+                        <input type="color" id="bgcolorPicker" class="color-input" value="#1e2a3a" onchange="updateHex('bgcolor')">
+                        <input type="text" id="bgcolorHex" class="color-hex" value="#1e2a3a" onchange="updatePicker('bgcolor')" maxlength="7">
+                    </div>
+                </div>
+                <div class="color-picker-group">
+                    <span class="color-picker-label" style="color: #333;">📱 رنگ نوبار:</span>
+                    <div class="color-picker-wrapper">
+                        <input type="color" id="navcolorPicker" class="color-input" value="#4f46e5" onchange="updateHex('navcolor')">
+                        <input type="text" id="navcolorHex" class="color-hex" value="#4f46e5" onchange="updatePicker('navcolor')" maxlength="7">
+                    </div>
+                </div>
+                <div class="color-picker-group">
+                    <span class="color-picker-label" style="color: #333;">✏️ رنگ نوشته‌ها:</span>
+                    <div class="color-picker-wrapper">
+                        <input type="color" id="fgcolorPicker" class="color-input" value="#e0e0e0" onchange="updateHex('fgcolor')">
+                        <input type="text" id="fgcolorHex" class="color-hex" value="#e0e0e0" onchange="updatePicker('fgcolor')" maxlength="7">
+                    </div>
+                </div>
+                <div class="color-picker-group">
+                    <span class="color-picker-label" style="color: #333;">1️⃣ رنگ اولیه:</span>
+                    <div class="color-picker-wrapper">
+                        <input type="color" id="pricolorPicker" class="color-input" value="#10b981" onchange="updateHex('pricolor')">
+                        <input type="text" id="pricolorHex" class="color-hex" value="#10b981" onchange="updatePicker('pricolor')" maxlength="7">
+                    </div>
+                </div>
+                <div class="color-picker-group">
+                    <span class="color-picker-label" style="color: #333;">2️⃣ رنگ ثانویه:</span>
+                    <div class="color-picker-wrapper">
+                        <input type="color" id="seccolorPicker" class="color-input" value="#f59e0b" onchange="updateHex('seccolor')">
+                        <input type="text" id="seccolorHex" class="color-hex" value="#f59e0b" onchange="updatePicker('seccolor')" maxlength="7">
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button type="submit" class="admin-btn save-btn">ذخیره تنظیمات</button>
+                    <button type="button" class="admin-btn cancel-btn" onclick="window.location.href='/fa/home/'">بازگشت</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        var cookie = document.cookie;
+        var token = cookie.split('; ').find(row => row.startsWith('token='));
+        if (token) {
+            token = token.split('=')[1];
+            var formData = new URLSearchParams();
+            formData.append('token', token);
+            fetch('/fa/login/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status == "invalid" || data.status == "user") {
+                        window.location.href = '/fa/login/';
+                    }
+                });
+        }
+        else {
+            window.location.href = '/fa/login/';
+        }
+
+        let currentSettings = {
+            name: '',
+            allow: '',
+            limit: 100,
+            bgcolor: '#ffffff',
+            navcolor: '#ffffff',
+            fgcolor: '#ffffff',
+            catcolor: '#ffffff',
+            procolor: '#ffffff'
+        };
+
+        function getToken() {
+            var cookie = document.cookie;
+            var token = cookie.split('; ').find(row => row.startsWith('token='));
+            if (token) {
+                return token.split('=')[1];
+            }
+            return null;
+        }
+
+        function updateHex(type) {
+            const picker = document.getElementById(type + 'Picker');
+            const hexInput = document.getElementById(type + 'Hex');
+            hexInput.value = picker.value;
+        }
+
+        function updatePicker(type) {
+            const picker = document.getElementById(type + 'Picker');
+            const hexInput = document.getElementById(type + 'Hex');
+            let value = hexInput.value.trim();
+            if (!value.startsWith('#')) {
+                value = '#' + value;
+            }
+            if (/^#[0-9A-Fa-f]{6}$/.test(value)) {
+                picker.value = value;
+            }
+        }
+
+        function hideLoading() {
+            document.getElementById('loading').classList.add('fade-out');
+        }
+
+        var token = getToken();
+        if (token) {
+            var formData = new URLSearchParams();
+            formData.append('token', token);
+            fetch('/fa/settings/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: formData.toString()
+            })
+                .then(response => response.json())
+                .then(data => {
+                    currentSettings = {
+                        name: data.name || '',
+                        allow: data.allow || '',
+                        limit: data.limit || 100,
+                        bgcolor: data.bgcolor || '#ffffff',
+                        navcolor: data.navcolor || '#ffffff',
+                        fgcolor: data.fgcolor || '#ffffff',
+                        pricolor: data.pricolor || '#ffffff',
+                        seccolor: data.seccolor || '#ffffff'
+                    };
+                    
+                    document.getElementById('storeName').value = currentSettings.name;
+                    document.getElementById('allow').value = currentSettings.allow;
+                    document.getElementById('limit').value = currentSettings.limit;
+                    document.getElementById('bgcolorPicker').value = currentSettings.bgcolor;
+                    document.getElementById('bgcolorHex').value = currentSettings.bgcolor;
+                    document.getElementById('navcolorPicker').value = currentSettings.navcolor;
+                    document.getElementById('navcolorHex').value = currentSettings.navcolor;
+                    document.getElementById('fgcolorPicker').value = currentSettings.fgcolor;
+                    document.getElementById('fgcolorHex').value = currentSettings.fgcolor;
+                    document.getElementById('pricolorPicker').value = currentSettings.pricolor;
+                    document.getElementById('pricolorHex').value = currentSettings.pricolor;
+                    document.getElementById('seccolorPicker').value = currentSettings.seccolor;
+                    document.getElementById('seccolorHex').value = currentSettings.seccolor;
+
+                    if (data.pricolor && data.seccolor) {
+                        document.body.style.background = `linear-gradient(135deg, ${data.pricolor} 0%, ${data.seccolor} 100%)`;
+                        document.querySelectorAll('.save-btn, .cancel-btn').forEach(btn => {
+                            btn.style.backgroundColor = data.pricolor;
+                        });
+                    }
+
+                    if (data.bgcolor) {
+                        let container = document.querySelector('.admin-container');
+                        if (container) {
+                            container.style.backgroundColor = data.bgcolor;
+                            container.style.backdropFilter = 'none';
+                        }
+                        document.querySelectorAll('.color-picker-group').forEach(el => {
+                            el.style.backgroundColor = data.bgcolor;
+                        });
+                    }
+
+                    if (data.navcolor) {
+                        let meta = document.createElement('meta');
+                        meta.name = "theme-color";
+                        meta.content = data.navcolor;
+                        document.head.appendChild(meta);
+                    }
+
+                    if (data.fgcolor) {
+                        document.querySelectorAll('.admin-btn').forEach(btn => {
+                            btn.style.color = data.fgcolor;
+                        });
+                    }
+
+                    if (data.name) {
+                        document.title = data.name + " | تنظیمات ظاهری";
+                    }
+
+                    setTimeout(hideLoading, 500);
+                })
+                .catch(error => {
+                    console.log('خطا در دریافت تنظیمات:', error);
+                    setTimeout(hideLoading, 500);
+                });
+        }
+
+        function saveSettings(event) {
+            event.preventDefault();
+            const name = document.getElementById('storeName').value.trim();
+            const allow = document.getElementById('allow').value.trim();
+            const limit = document.getElementById('limit').value.trim();
+            const bgcolor = document.getElementById('bgcolorHex').value;
+            const navcolor = document.getElementById('navcolorHex').value;
+            const fgcolor = document.getElementById('fgcolorHex').value;
+            const pricolor = document.getElementById('pricolorHex').value;
+            const seccolor = document.getElementById('seccolorHex').value;
+
+            var token = getToken();
+            var formData = new URLSearchParams();
+            formData.append('token', token);
+            formData.append('action', 'set');
+            formData.append('name', name);
+            formData.append('allow', allow);
+            formData.append('limit', limit);
+            formData.append('bgcolor', bgcolor);
+            formData.append('navcolor', navcolor);
+            formData.append('fgcolor', fgcolor);
+            formData.append('pricolor', pricolor);
+            formData.append('seccolor', seccolor);
+
+            fetch('/fa/settings/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: formData.toString()
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status == "name") {
+                        alert("لطفا نام فروشگاه را وارد نمایید.");
+                    }
+                    else if (data.status == "allow") {
+                        alert("لطفا فایل های مجاز را وارد نمایید.");
+                    }
+                    else if (data.status == "limit") {
+                        alert("لطفا حداکثر حجم مجاز را وارد نمایید.");
+                    }
+                    else if (data.status == "bgcolor") {
+                        alert("لطفا رنگ پس زمینه را وارد نمایید.");
+                    }
+                    else if (data.status == "navcolor") {
+                        alert("لطفا رنگ نوبار را وارد نمایید.");
+                    }
+                    else if (data.status == "fgcolor") {
+                        alert("لطفا رنگ نوشته ها را وارد نمایید.");
+                    }
+                    else if (data.status == "pricolor") {
+                        alert("لطفا رنگ اولیه را وارد نمایید.");
+                    }
+                    else if (data.status == "seccolor") {
+                        alert("لطفا رنگ ثانویه را وارد نمایید.");
+                    }
+                    else if (data.status == "ok") {
+                        alert("تنظیمات با موفقیت ذخیره شد.");
+                        
+                        if (bgcolor) document.body.style.background = bgcolor;
+                        if (navcolor) {
+                            let metaThemeColor = document.querySelector('meta[name="theme-color"]');
+                            if (!metaThemeColor) {
+                                metaThemeColor = document.createElement('meta');
+                                metaThemeColor.name = "theme-color";
+                                document.head.appendChild(metaThemeColor);
+                            }
+                            metaThemeColor.content = navcolor;
+                        }
+                        if (pricolor && seccolor) {
+                            document.body.style.background = `linear-gradient(135deg, ${pricolor} 0%, ${seccolor} 100%)`;
+                            document.querySelectorAll('.save-btn, .cancel-btn').forEach(btn => {
+                                btn.style.backgroundColor = pricolor;
+                            });
+                        }
+                    }
+                    else if (data.status == "error") {
+                        alert('خطا در ذخیره تنظیمات');
+                    }
+                })
+                .catch(error => {
+                    console.log('خطا در ذخیره تنظیمات:', error);
+                    alert('خطا در ذخیره تنظیمات');
+                });
+        }
+    </script>
+</body>
+
+</html>

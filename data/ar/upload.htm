@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Vazirmatn', Tahoma, Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding-top: 60px;
+        }
+
+        .header {
+            padding: 15px 20px;
+            text-align: center;
+            position: fixed;
+            top: 0;
+            z-index: 100;
+            width: 100%;
+        }
+
+        .header h1 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-align: center;
+            margin: 0;
+        }
+
+        .container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .upload-box {
+            background: white;
+            border-radius: 20px;
+            padding: 40px 30px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        .upload-box h2 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+        }
+
+        .upload-box p {
+            color: #666;
+            margin-bottom: 25px;
+            font-size: 0.9rem;
+        }
+
+        .drop-zone {
+            border-width: 3px;
+            border-style: dashed;
+            border-radius: 15px;
+            padding: 50px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .drop-zone:hover,
+        .drop-zone.dragover {
+            transform: scale(1.02);
+        }
+
+        .drop-zone .icon {
+            font-size: 4rem;
+            margin-bottom: 15px;
+        }
+
+        .drop-zone h3 {
+            color: #667eea;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+
+        .drop-zone span {
+            color: #888;
+            font-size: 0.85rem;
+        }
+
+        .file-list {
+            display: none;
+            border-width: 2px;
+            border-style: solid;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+            text-align: right;
+        }
+
+        .file-list.show {
+            display: block;
+        }
+
+        .file-list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .file-list-header span {
+            font-weight: 600;
+        }
+
+        .clear-all {
+            color: #f44336;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 10px;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            transition: all 0.2s;
+        }
+
+        .file-item .name {
+            color: #333;
+            font-size: 0.9rem;
+            word-break: break-all;
+            flex: 1;
+            text-align: right;
+        }
+
+        .file-item .remove {
+            color: #f44336;
+            cursor: pointer;
+            padding: 5px;
+            margin-right: 10px;
+            font-size: 1.1rem;
+        }
+
+        .message {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: 500;
+            display: none;
+        }
+
+        .message.show {
+            display: block;
+        }
+
+        .message.success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 2px solid #4caf50;
+        }
+
+        .message.error {
+            background: #ffebee;
+            color: #c62828;
+            border: 2px solid #f44336;
+        }
+
+        .message.warning {
+            background: #fff3e0;
+            color: #e65100;
+            border: 2px solid #ff9800;
+        }
+
+        .progress-container {
+            display: none;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .progress-container.show {
+            display: block;
+        }
+
+        .progress-bar-bg {
+            background: #e0e0e0;
+            border-radius: 10px;
+            height: 20px;
+            width: 100%;
+            overflow: hidden;
+            margin-bottom: 5px;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            transition: width 0.2s ease;
+        }
+
+        .progress-text {
+            font-size: 0.9rem;
+            color: #555;
+            margin-top: 5px;
+        }
+
+        .submit-btn {
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            font-family: inherit;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .formats {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 10px;
+        }
+
+        .formats h4 {
+            color: #555;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .formats .badge {
+            display: inline-block;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            margin: 3px;
+        }
+
+        /* استایل نوار ناوبری همبرگری */
+        .navbar-menu-button {
+            background-color: transparent;
+            border: none;
+            padding: 7px;
+            cursor: pointer;
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 101;
+        }
+
+        .navbar-menu-button span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            margin: 5px 0;
+            background-color: white;
+            transition: 0.3s;
+        }
+
+        .navbar-menu {
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: -222px;
+            right: 0;
+            width: 100%;
+            text-align: center;
+            transition-duration: 0.8s;
+            z-index: 90;
+            background-color: #16213e;
+        }
+
+        .navbar-menu.active {
+            top: 57px;
+        }
+
+        .navbar-menu ul {
+            padding: 5px;
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .navbar-menu li {
+            margin-bottom: 10px;
+        }
+
+        .navbar-menu a {
+            text-decoration: none;
+            color: white;
+            font-size: 1.1em;
+            transition: 0.3s;
+            display: block;
+            padding: 3px;
+        }
+
+        .navbar-menu a:hover {
+            opacity: 0.7;
+        }
+
+        .footer {
+            color: #888;
+            text-align: center;
+            padding: 15px;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.2rem;
+            }
+
+            .upload-box {
+                padding: 30px 20px;
+            }
+
+            .drop-zone {
+                padding: 35px 15px;
+            }
+
+            .drop-zone .icon {
+                font-size: 3rem;
+            }
+
+            .submit-btn {
+                padding: 12px 30px;
+                font-size: 1rem;
+            }
+
+            .navbar-menu.active {
+                top: 53px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <button class="navbar-menu-button" onclick="toggleMenu()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <h1><span id="title-text"></span></h1>
+    </div>
+
+    <div class="navbar-menu">
+        <ul>
+            <li><a href="/ar/upload/">رفع ملف</a></li>
+            <li><a href="/ar/download/">تحميل ملف</a></li>
+            <li><a href="/">تغيير اللغة</a></li>
+            <li><a href="/ar/login/">لوحة الإدارة</a></li>
+            <li><a href="/ar/about/">من نحن</a></li>
+            <li><a href="/ar/contact/">اتصل بنا</a></li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <div class="upload-box">
+            <h2>رفع ملف</h2>
+            <p>اختر عدة ملفات أو اسحبها وأفلتها.</p>
+
+            <!-- پیام‌ها -->
+            <div id="messageBox" class="message"></div>
+
+            <form id="uploadForm">
+                <input type="file" style="display: none;" id="fileInput" multiple>
+
+                <div class="drop-zone" id="dropZone">
+                    <div class="icon">📁</div>
+                    <h3 id="select-text">انقر لإضافة ملف</h3>
+                    <span>أو أفلت الملفات هنا</span>
+                </div>
+
+                <div class="file-list" id="fileList">
+                    <div class="file-list-header">
+                        <span id="fileCount">٠ ملف محدد</span>
+                        <span class="clear-all" id="clearAll">حذف الكل</span>
+                    </div>
+                    <div id="fileItems"></div>
+                </div>
+
+                <!-- نوار پیشرفت -->
+                <div class="progress-container" id="progressContainer">
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" id="progressBar"></div>
+                    </div>
+                    <div class="progress-text" id="progressText">0%</div>
+                </div>
+
+                <button type="submit" class="submit-btn" id="submitBtn" disabled>
+                    إرسال الملفات
+                </button>
+            </form>
+
+            <div class="formats" id="badgesContainer">
+                <h4>📋 الصيغ المسموحة:</h4>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        المصمم والمطور علي رضا مشفقي
+    </div>
+
+    <script>
+        const errorMessages = {
+            200: { type: 'success', text: 'تم رفع الملفات بنجاح.' },
+            207: { type: 'warning', text: 'تم رفع بعض الملفات بنجاح بينما واجه البعض الآخر خطأ.' },
+            400: { type: 'error', text: 'لم يتم اختيار أي ملف.' },
+            413: { type: 'error', text: 'حجم الملف يتجاوز الحد المسموح به (100 ميغابايت).' },
+            415: { type: 'error', text: 'صيغة الملف غير مسموحة. الصيغ المسموحة: PDF، DOC، DOCX، XLS، XLSX، PPT، PPTX، PSD، AI، DWG، DXF، JPG، JPEG، PNG، GIF، PUB' },
+            500: { type: 'error', text: 'خطأ في رفع الملف. يرجى المحاولة مرة أخرى.' },
+            501: { type: 'error', text: 'خطأ في حفظ الملف على الخادم.' }
+        };
+
+        function showAlertByCode(code, additionalInfo = null) {
+            const error = errorMessages[code] || { type: 'error', text: 'حدث خطأ غير معروف. (الرمز: ' + code + ')' };
+            
+            if (additionalInfo && code === 207) {
+                showMessage(`${error.text} تم رفع ${additionalInfo.success_count} ملف بنجاح وفشل ${additionalInfo.failed_count} ملف.`, error.type);
+            } else if (code === 200 && additionalInfo) {
+                showMessage(`${error.text} تم رفع ${additionalInfo.count} ملف.`, error.type);
+            } else {
+                showMessage(error.text, error.type);
+            }
+        }
+
+        let host = '';
+        fetch('/ar/upload/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.name) {
+                    document.title = data.name + " | إرسال ملف";
+                    document.getElementById("title-text").textContent = data.name;
+                }
+
+                if (data.navcolor) {
+                    document.querySelector(".header").style.backgroundColor = data.navcolor;
+                    document.querySelector(".footer").style.backgroundColor = data.navcolor;
+                    document.querySelector(".navbar-menu").style.backgroundColor = data.navcolor;
+                    let meta = document.createElement('meta');
+                    meta.name = "theme-color";
+                    meta.content = data.navcolor;
+                    document.head.appendChild(meta);
+                }
+
+                if (data.fgcolor) {
+                    document.querySelector(".header").style.color = data.fgcolor;
+                    document.querySelector("#title-text").style.color = data.fgcolor;
+                    document.querySelectorAll('.navbar-menu-button span').forEach(span => {
+                        span.style.backgroundColor = data.fgcolor;
+                    });
+                    document.querySelectorAll('.navbar-menu a').forEach(a => {
+                        a.style.color = data.fgcolor;
+                    });
+                }
+
+                if (data.allow) {
+                    const container = document.getElementById('badgesContainer');
+                    const formats = data.allow.split(',');
+                    formats.forEach((format, index) => {
+                        const badge = document.createElement('span');
+                        badge.className = 'badge';
+                        badge.style.background = data.pricolor;
+                        badge.textContent = format.trim();
+                        container.appendChild(badge);
+                    });
+                    const br1 = document.createElement("br");
+                    const br2 = document.createElement("br");
+                    container.appendChild(br1);
+                    container.appendChild(br2);
+                }
+
+                if (data.limit) {
+                    const container = document.getElementById('badgesContainer');
+                    const small = document.createElement("small");
+                    small.setAttribute("style", "color: #888;");
+                    small.textContent = "الحد الأقصى للحجم المسموح: " + toPersian(data.limit) + " ميغابايت";
+                    container.appendChild(small);
+                }
+
+                if (data.pricolor && data.seccolor) {
+                    document.querySelector("#select-text").style.color = data.pricolor;
+                    document.querySelector("#dropZone").style.color = data.pricolor;
+                    document.querySelector("#fileList").style.color = data.pricolor;
+                    document.querySelector("#fileCount").style.color = data.pricolor;
+                    document.querySelector("#clearAll").style.color = data.pricolor;
+                    document.body.style.background = "linear-gradient(135deg, " + data.pricolor + " 0%, " + data.seccolor + " 100%)";
+                    document.querySelector("#submitBtn").style.background = "linear-gradient(135deg, " + data.pricolor + " 0%, " + data.seccolor + " 100%)";
+                    document.querySelector(".progress-bar-fill").style.background = "linear-gradient(90deg, " + data.pricolor + ", " + data.seccolor + ")";
+                }
+
+                if (data.bgcolor) {
+                    document.querySelector("#dropZone").style.background = data.bgcolor;
+                    document.querySelector("#fileList").style.background = data.bgcolor;
+                }
+
+                if (data.host) {
+                    host = data.host;
+                }
+            })
+            .catch(error => {
+                console.error('خطأ في جلب البيانات:', error);
+            });
+
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const fileList = document.getElementById('fileList');
+        const fileItems = document.getElementById('fileItems');
+        const fileCount = document.getElementById('fileCount');
+        const clearAll = document.getElementById('clearAll');
+        const submitBtn = document.getElementById('submitBtn');
+        const uploadForm = document.getElementById('uploadForm');
+        const messageBox = document.getElementById('messageBox');
+
+        const progressContainer = document.getElementById('progressContainer');
+        const progressBar = document.getElementById('progressBar');
+        const progressText = document.getElementById('progressText');
+
+        dropZone.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            updateFileList();
+        });
+
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            if (e.dataTransfer.files.length > 0) {
+                const existingFiles = Array.from(fileInput.files);
+                const newFiles = Array.from(e.dataTransfer.files);
+                const allFiles = [...existingFiles, ...newFiles];
+                setFiles(allFiles);
+            }
+        });
+
+        function setFiles(filesArray) {
+            const dataTransfer = new DataTransfer();
+            filesArray.forEach(file => dataTransfer.items.add(file));
+            fileInput.files = dataTransfer.files;
+            updateFileList();
+        }
+
+        function toPersian(str) {
+            const persianDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+            return str.replace(/\d/g, (digit) => persianDigits[digit]);
+        }
+
+        function updateFileList() {
+            const files = fileInput.files;
+            if (files.length === 0) {
+                fileList.classList.remove('show');
+                submitBtn.disabled = true;
+                return;
+            }
+            fileList.classList.add('show');
+            fileItems.innerHTML = '';
+
+            const persianNumber = (num) => num.toString().replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
+            fileCount.textContent = persianNumber(files.length) + ' ملف محدد';
+            submitBtn.disabled = false;
+
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const item = document.createElement('div');
+                item.className = 'file-item';
+                item.innerHTML = `
+                    <span class="name">📄 ${file.name}</span>
+                    <span class="remove" data-index="${i}">✖</span>
+                `;
+                fileItems.appendChild(item);
+            }
+
+            document.querySelectorAll('.file-item .remove').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    removeFile(parseInt(btn.dataset.index));
+                });
+            });
+        }
+
+        function removeFile(indexToRemove) {
+            const filesArray = Array.from(fileInput.files);
+            filesArray.splice(indexToRemove, 1);
+            setFiles(filesArray);
+        }
+
+        clearAll.addEventListener('click', (e) => {
+            e.stopPropagation();
+            setFiles([]);
+        });
+
+        function showMessage(text, type) {
+            messageBox.textContent = text;
+            messageBox.className = `message ${type} show`;
+            setTimeout(() => {
+                messageBox.classList.remove('show');
+            }, 5000);
+        }
+
+        uploadForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const files = fileInput.files;
+            if (files.length === 0) return;
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = '⏳ جاري الإرسال...';
+            progressContainer.classList.add('show');
+            progressBar.style.width = '0%';
+            progressText.textContent = '0%';
+
+            const formData = new FormData();
+            for (let i = 0; i < files.length; i++) {
+                formData.append('files[]', files[i]);
+            }
+
+            const xhr = new XMLHttpRequest();
+
+            xhr.upload.addEventListener('progress', (e) => {
+                if (e.lengthComputable) {
+                    const percentComplete = Math.round((e.loaded / e.total) * 100);
+                    progressBar.style.width = percentComplete + '%';
+                    progressText.textContent = percentComplete + '%';
+                }
+            });
+
+            xhr.addEventListener('load', () => {
+                if (xhr.status === 200) {
+                    try {
+                        const response = JSON.parse(xhr.responseText);
+                        if (response.code === 200) {
+                            showAlertByCode(200, { count: response.count });
+                            setFiles([]);
+                            progressContainer.classList.remove('show');
+                        } 
+                        else if (response.code === 207) {
+                            showAlertByCode(207, { success_count: response.success_count, failed_count: response.failed_count });
+                            setFiles([]);
+                            progressContainer.classList.remove('show');
+                        }
+                        else {
+                            showAlertByCode(response.code);
+                            progressContainer.classList.remove('show');
+                        }
+                        submitBtn.textContent = 'إرسال الملفات';
+                        submitBtn.disabled = false;
+                    } catch (err) {
+                        showMessage('خطأ في معالجة استجابة الخادم', 'error');
+                        console.error('Server response:', xhr.responseText);
+                        submitBtn.textContent = 'إرسال الملفات';
+                        submitBtn.disabled = false;
+                        progressContainer.classList.remove('show');
+                    }
+                } else {
+                    showMessage('خطأ في الاتصال بالخادم (رمز الخطأ: ' + xhr.status + ')', 'error');
+                    submitBtn.textContent = 'إرسال الملفات';
+                    submitBtn.disabled = false;
+                    progressContainer.classList.remove('show');
+                }
+            });
+
+            xhr.addEventListener('error', () => {
+                showMessage('خطأ في الشبكة. هل الخادم قيد التشغيل؟', 'error');
+                submitBtn.textContent = 'إرسال الملفات';
+                submitBtn.disabled = false;
+                progressContainer.classList.remove('show');
+            });
+
+            xhr.addEventListener('abort', () => {
+                showMessage('تم إلغاء الرفع.', 'warning');
+                submitBtn.textContent = 'إرسال الملفات';
+                submitBtn.disabled = false;
+                progressContainer.classList.remove('show');
+            });
+
+            xhr.open('POST', 'http://' + host + '/upload.php');
+            xhr.send(formData);
+        });
+
+        function toggleMenu() {
+            const navbarMenu = document.querySelector('.navbar-menu');
+            navbarMenu.classList.toggle('active');
+        }
+
+        document.addEventListener('click', function (event) {
+            const navbarMenu = document.querySelector('.navbar-menu');
+            const navbarButton = document.querySelector('.navbar-menu-button');
+            const isClickInsideMenu = navbarMenu.contains(event.target);
+            const isClickOnButton = navbarButton.contains(event.target);
+
+            if (!isClickInsideMenu && !isClickOnButton) {
+                if (navbarMenu.classList.contains('active')) {
+                    navbarMenu.classList.remove('active');
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title></title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: 'Segoe UI', system-ui, -apple-system, 'Roboto', Tahoma, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #1e2a3a 0%, #0f1724 100%);
+            transition: background 0.2s ease;
+        }
+
+        .login-card {
+            max-width: 420px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 2rem;
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+        }
+
+        .welcome-section {
+            padding: 2rem 2rem 1rem 2rem;
+            text-align: center;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .welcome-title {
+            font-size: 1.65rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-sub {
+            font-size: 0.85rem;
+            color: #6b7280;
+            margin-top: 0.3rem;
+        }
+
+        .login-section {
+            padding: 1.5rem 2rem 2.5rem 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .input-group label {
+            color: #374151;
+            font-size: 1rem;
+            font-weight: 600;
+            padding-left: 0.5rem;
+            text-align: left;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 0.9rem 1rem;
+            font-size: 1rem;
+            font-family: inherit;
+            border: 2px solid #e5e7eb;
+            border-radius: 1rem;
+            background: #f9fafb;
+            color: #1f2937;
+            outline: none;
+            transition: all 0.2s ease;
+            direction: ltr;
+        }
+
+        .input-group input:focus {
+            border-color: #3b82f6;
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .input-group input::placeholder {
+            color: #9ca3af;
+        }
+
+        .login-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            width: 100%;
+            padding: 0.9rem 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+            font-family: inherit;
+            border: none;
+            border-radius: 3rem;
+            cursor: pointer;
+            background: #3b82f6;
+            color: white;
+            transition: all 0.2s ease;
+            letter-spacing: 0.5px;
+            margin-top: 0.5rem;
+        }
+
+        .login-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        @media (max-width: 550px) {
+            body {
+                padding: 1rem;
+            }
+
+            .welcome-section {
+                padding: 1.5rem 1.5rem 0.8rem 1.5rem;
+            }
+
+            .welcome-title {
+                font-size: 1.6rem;
+            }
+
+            .login-section {
+                padding: 1.5rem 1.5rem 2rem 1.5rem;
+                gap: 1rem;
+            }
+
+            .input-group input {
+                padding: 0.75rem 1rem;
+            }
+
+            .login-btn {
+                padding: 0.75rem 0;
+                font-size: 1.1rem;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .welcome-title {
+                font-size: 1.4rem;
+            }
+
+            .login-btn {
+                font-size: 0.95rem;
+                padding: 0.7rem 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="login-card">
+        <div class="welcome-section">
+            <div class="welcome-title" style="color: #333;">Admin Login</div>
+        </div>
+        <div class="login-section">
+            <div class="input-group">
+                <label style="color: #333;">Username:</label>
+                <input type="text" id="username" placeholder="Enter your username">
+            </div>
+            <div class="input-group">
+                <label style="color: #333;">Password:</label>
+                <input type="password" id="password" placeholder="Enter your password">
+            </div>
+            <button class="login-btn" onclick="login()">
+                Login
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function checkExistingToken() {
+            const cookie = document.cookie;
+            const tokenCookie = cookie.split('; ').find(row => row.startsWith('token='));
+            
+            if (tokenCookie) {
+                const token = tokenCookie.split('=')[1];
+                const formData = new URLSearchParams();
+                formData.append('token', token);
+                
+                fetch('/en/login/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === "admin" || data.status === "user") {
+                        window.location.href = '/en/home/';
+                    }
+                })
+                .catch(error => {
+                    console.log("Error checking token:", error);
+                });
+            }
+        }
+
+        function fetchColorsAndSettings() {
+            try {
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', '/en/login/', false);
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                xhr.send(null);
+                
+                if (xhr.status === 200) {
+                    const data = JSON.parse(xhr.responseText);
+                    
+                    if (data.name) {
+                        document.title = data.name + " | Login";
+                    }
+                    
+                    if (data.pricolor && data.seccolor) {
+                        document.body.style.background = `linear-gradient(135deg, ${data.pricolor} 0%, ${data.seccolor} 100%)`;
+                    }
+                    
+                    if (data.pricolor) {
+                        const loginBtn = document.querySelector('.login-btn');
+                        if (loginBtn) {
+                            loginBtn.style.backgroundColor = data.pricolor;
+                            loginBtn.style.background = data.pricolor;
+                        }
+                    }
+                    
+                    if (data.bgcolor) {
+                        const card = document.querySelector('.login-card');
+                        if (card) {
+                            card.style.backgroundColor = data.bgcolor;
+                        }
+                    }
+
+                    if (data.navcolor) {
+                        let meta = document.createElement('meta');
+                        meta.name = "theme-color";
+                        meta.content = data.navcolor;
+                        document.head.appendChild(meta);
+                    }
+                }
+            } catch (error) {
+                console.log("Error fetching settings from API:", error);
+            }
+        }
+
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (!username || !password) {
+                alert('Please enter username and password.');
+                return;
+            }
+            
+            const formData = new URLSearchParams();
+            formData.append('username', username);
+            formData.append('password', password);
+            
+            fetch('/en/login/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: formData.toString()
+            })
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(data) {
+                if (data.status === 'ok') {
+                    const expires = new Date();
+                    expires.setTime(expires.getTime() + (24 * 60 * 60 * 1000));
+                    document.cookie = `token=${data.token}; expires=${expires.toUTCString()}; path=/; SameSite=Strict`;
+                    window.location.href = '/en/home/';
+                }
+                else if (data.status === 'error' && data.message === 'Invalid credentials') {
+                    alert('Incorrect username or password.');
+                    document.getElementById("username").value = '';
+                    document.getElementById("password").value = '';
+                    document.getElementById("username").focus();
+                }
+                else if (data.status === 'error' && data.message === 'Missing parameters') {
+                    alert('Please enter username and password.');
+                }
+                else {
+                    alert('An unknown error occurred.');
+                }
+            })
+            .catch(function(error) {
+                console.error('Error:', error);
+                alert('Server communication error');
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            checkExistingToken();
+            fetchColorsAndSettings();
+            
+            const passwordInput = document.getElementById('password');
+            if (passwordInput) {
+                passwordInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        login();
+                    }
+                });
+            }
+            
+            const usernameInput = document.getElementById('username');
+            if (usernameInput) {
+                usernameInput.focus();
+            }
+        });
+    </script>
+</body>
+
+</html>
