@@ -12,6 +12,19 @@
 
 ---
 
+## 📸 System Preview
+
+<div align="center">
+  <table>
+    <tr>
+      <td align="center"><img src="image1.jpg" alt="Dashboard"></td>
+      <td align="center"><img src="image2.jpg" alt="Settings"></td>
+    </tr>
+  </table>
+</div>
+
+---
+
 ## 🧠 Overview
 
 **ESP32 CafeNet Middleware** is a middleware that converts your ESP32 module into a file transfer access point for cyber cafe (CoffeeNet) systems without needing internet, with speeds faster than Bluetooth.
@@ -75,6 +88,8 @@ You will be redirected to the file transfer page.
 | Role | Username | Password |
 |------|----------|----------|
 | Admin | admin | admin |
+
+> 🔒 **Security Note:** For better security, please change the default password after your first connection.
 
 ---
 
