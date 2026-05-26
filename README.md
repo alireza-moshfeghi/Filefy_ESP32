@@ -27,7 +27,7 @@
 
 ## 🧠 Overview
 
-**ESP32 CafeNet Middleware** is a middleware that converts your ESP32 module into a file transfer access point for cyber cafe (CoffeeNet) systems without needing internet, with speeds faster than Bluetooth.
+**ESP32 Internet Cafe Middleware** is a middleware that converts your ESP32 module into a file transfer access point for Internet cafe systems without needing internet, with speeds faster than Bluetooth.
 
 It uses a communication protocol similar to Zapya or SHAREit, but powered by **Apache PHP** running on the cafe manager's system.
 
