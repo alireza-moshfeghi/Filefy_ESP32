@@ -181,7 +181,7 @@ void setup() {
       else if (LittleFS.exists("/files/" + request->getParam("code", true)->value() + ".txt")) {
         File url = LittleFS.open("/files/" + request->getParam("code", true)->value() + ".txt", "r");
         File host = LittleFS.open("/configs/host.txt", "r");
-        request->send(200, "application/json", "{\"download_url\":\"http://" + host.readString() + "/downloads/" + url.readString() + "\"}");
+        request->send(200, "application/json", "{\"download_url\":\"http://" + host.readString() + "/file.php?name=" + url.readString() + "\"}");
         url.close();
         host.close();
       }
@@ -770,7 +770,7 @@ void setup() {
       else if (LittleFS.exists("/files/" + request->getParam("code", true)->value() + ".txt")) {
         File url = LittleFS.open("/files/" + request->getParam("code", true)->value() + ".txt", "r");
         File host = LittleFS.open("/configs/host.txt", "r");
-        request->send(200, "application/json", "{\"download_url\":\"http://" + host.readString() + "/downloads/" + url.readString() + "\"}");
+        request->send(200, "application/json", "{\"download_url\":\"http://" + host.readString() + "/file.php?name=" + url.readString() + "\"}");
         url.close();
         host.close();
       }
@@ -1359,7 +1359,7 @@ void setup() {
       else if (LittleFS.exists("/files/" + request->getParam("code", true)->value() + ".txt")) {
         File url = LittleFS.open("/files/" + request->getParam("code", true)->value() + ".txt", "r");
         File host = LittleFS.open("/configs/host.txt", "r");
-        request->send(200, "application/json", "{\"download_url\":\"http://" + host.readString() + "/downloads/" + url.readString() + "\"}");
+        request->send(200, "application/json", "{\"download_url\":\"http://" + host.readString() + "/file.php?name=" + url.readString() + "\"}");
         url.close();
         host.close();
       }
